@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View zms.device View List -->
+    <record id="view_zms_device_list" model="ir.ui.view">
+        <field name="name">view.zms.device.list</field>
+        <field name="model">zms.device</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                       <!-- <field name="codex_id"/> -->
+                 <field name="codex_code"/>
+                 <field name="host_id"/>
+                 
+                    <field name="device_type"/>
+                    <field name="status"/>
+                    
+            </list>
+        </field>
+    </record>
+
+    <!-- View zms.device form -->
+    <record id="view_zms_device_form" model="ir.ui.view">
+        <field name="name">view.zms.device.form</field>
+        <field name="model">zms.device</field>
+        <field name="arch" type="xml">
+            <form string="Zms Device">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                              <!-- <field name="codex_id"/> -->
+                 <field name="codex_code"/>
+                        <field name="host_id"/>
+                    <field name="device_type"/>
+                    <field name="secret_id"/>
+                    
+                    <field name="status"/>
+                    </group>
+                        </group>
+                </sheet>
+                
+            </form>
+        </field>
+    </record>
+
+    <!-- View zms.device search -->
+    <record id="view_zms_device_search" model="ir.ui.view">
+        <field name="name">view.zms.device.search</field>
+        <field name="model">zms.device</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action zms.device -->
+    <record id="action_zms_device" model="ir.actions.act_window">
+        <field name="name">Zms Device</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">zms.device</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Zms Device.
+            </p>
+        </field>
+    </record>
+
+    <!-- Window Action zms.device -->
+    <record id="action_zms_device_views" model="ir.actions.act_window">
+        <field name="name">Zms Device</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">zms.device</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Zms Device.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_server_assign_codex_to_devices" model="ir.actions.server">
+        <field name="name">Assign Missing Codex</field>
+        <field name="model_id" ref="model_zms_device"/> <!-- Referensi ke model zms.device -->
+        <field name="binding_model_id" ref="model_zms_device"/> <!-- Agar muncul di menu Action -->
+        <field name="binding_view_types">list,form</field> <!-- Muncul di List dan Form view -->
+        <field name="state">code</field> <!-- Tipe aksi adalah eksekusi kode Python -->
+        <field name="code">
+# records adalah recordset dari device yang dipilih (atau 1 jika di form view)
+records.action_assign_codex()
+        </field>
+    </record>
+
+</odoo>

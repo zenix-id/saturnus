@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+ <menuitem id="menu_zenix_zms_root" name="ZMS" sequence="10"/>
+
+ <menuitem id="menu_zenix_zms_device"
+              name="Device"
+              parent="menu_zenix_zms_root"
+              action="action_zms_device"
+              sequence="20"/>
+
+               <menuitem id="menu_zenix_zms_host"
+              name="IP/Host"
+              parent="menu_zenix_zms_root"
+              action="action_zms_host"
+              sequence="21"/>
+              <menuitem id="menu_zenix_zms_codex"
+              name="CODEX"
+              parent="menu_zenix_zms_root"
+              action="action_zms_codex"
+              sequence="22"/>
+              
+              <menuitem id="menu_zenix_zms_secret_vault"
+              name="Secret Vault"
+              parent="menu_zenix_zms_root"
+              action="action_zms_secret_vault"
+              sequence="23"/>
+
+              <menuitem id="menu_zenix_zms_secret"
+              name="ZMS Secret"
+              parent="menu_zenix_zms_root"
+              action="action_zms_secret"
+              sequence="24"/>
+              
+ </odoo>

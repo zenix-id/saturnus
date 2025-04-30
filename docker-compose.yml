@@ -1,0 +1,210 @@
+# ! Docker Compose - ZENIX Local Multi-Database Setup + DBGate UI
+# ! (Single PostgreSQL instance, Added Elasticsearch)
+# ! DBGate connections to be added manually via UI.
+
+version: '3.8' # Gunakan versi yang mendukung format healthcheck
+
+services:
+  # --- Redis ---
+  backend:
+    image: odoo:18
+    container_name: ${BACKEND_ODOO_CONTAINER_NAME}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_ODOO_PORT}:8069"
+    volumes:
+      - backend_odoo_data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+      - ./enterprise-addons:/mnt/enterprise-addons
+    environment:
+      - HOST=postgres
+      - USER=${DB_USERNAME}
+      - PASSWORD=${DB_PASSWORD}
+    networks:
+      - dbs_network
+  redis:
+    image: redis:7-alpine
+    container_name: ${DB_REDIS_CONTAINER_NAME}
+    command: redis-server --requirepass ${DB_REDIS_PASSWORD}
+    ports:
+      - "${DB_REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - dbs_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${DB_REDIS_PASSWORD}", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    mem_limit: 256m # Contoh pembatasan memori untuk Redis
+
+  # --- PostgreSQL (Standard) ---
+  postgres:
+    image: postgres:15-alpine # Menggunakan image PostgreSQL standar versi 15 (Alpine)
+    container_name: ${DB_PGSQL_CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${DB_PGSQL_DATABASE}
+      POSTGRES_USER: ${DB_PGSQL_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PGSQL_PASSWORD}
+    ports:
+      - "${DB_PGSQL_PORT}:5432"
+    volumes:
+      # Pastikan volume ini (jika sudah ada) kompatibel atau hapus untuk memulai ulang
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dbs_network
+    healthcheck:
+      # Healthcheck standar untuk PostgreSQL
+      test: ["CMD-SHELL", "pg_isready -U ${DB_PGSQL_USERNAME} -d ${DB_PGSQL_DATABASE} -h localhost"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+    restart: unless-stopped
+    mem_limit: 1g # Contoh pembatasan memori untuk Postgres
+
+  # --- MongoDB ---
+  mongodb:
+    image: mongo:7.0 # Atau versi lain yang diinginkan
+    container_name: ${DB_MONGO_CONTAINER_NAME}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_MONGO_DATABASE}
+    ports:
+      - "${DB_MONGO_PORT}:27017"
+    volumes:
+      - mongodb_data:/data/db
+      # - mongodb_config:/data/configdb # Uncomment jika perlu
+    networks:
+      - dbs_network
+    healthcheck:
+      # Gunakan mongosh jika image > 4.4, mongo jika < 4.4
+      test: ["CMD-SHELL", "mongosh mongodb://localhost:27017/${MONGO_INITDB_DATABASE:-admin} --quiet --username ${DB_MONGO_USERNAME} --password ${DB_MONGO_PASSWORD} --authenticationDatabase admin --eval 'db.runCommand({ping: 1}).ok' || mongo mongodb://localhost:27017/${MONGO_INITDB_DATABASE:-admin} --quiet --username ${DB_MONGO_USERNAME} --password ${DB_MONGO_PASSWORD} --authenticationDatabase admin --eval 'db.runCommand({ping: 1}).ok'"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    mem_limit: 1g # Contoh pembatasan memori untuk Mongo
+
+  # --- InfluxDB ---
+  influxdb:
+    image: influxdb:2.7 # Atau versi lain yang diinginkan
+    container_name: ${DB_INFLUX_CONTAINER_NAME}
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${DB_INFLUX_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${DB_INFLUX_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${DB_INFLUX_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${DB_INFLUX_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${DB_INFLUX_TOKEN}
+    ports:
+      - "${DB_INFLUX_PORT}:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - dbs_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    mem_limit: 512m # Contoh pembatasan memori untuk InfluxDB
+
+  # --- Elasticsearch ---
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2 # Gunakan versi spesifik
+    container_name: ${DB_ELASTIC_CONTAINER_NAME}
+    environment:
+      - node.name=${DB_ELASTIC_NODE_NAME}
+      - cluster.name=${DB_ELASTIC_CLUSTER_NAME}
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${DB_ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=${ELASTIC_JAVA_OPTS}"
+      - bootstrap.memory_lock=false
+    ports:
+      - "${DB_ELASTIC_PORT_HTTP}:9200"
+      - "${DB_ELASTIC_PORT_TRANSPORT}:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - dbs_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s --cacert config/certs/ca/ca.crt -u elastic:${DB_ELASTIC_PASSWORD} https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || curl -s -k -u elastic:${DB_ELASTIC_PASSWORD} http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    mem_limit: ${ELASTIC_MEM_LIMIT_MB}m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+
+  # --- DBGate Web UI (Manual Connection Setup) ---
+  dbgate:
+    image: dbgate/dbgate
+    container_name: ${DB_DBGATE_CONTAINER_NAME}
+    ports:
+      - "${DB_DBGATE_PORT}:3000"
+    volumes:
+      - dbgate_data:/root/.dbgate
+    networks:
+      - dbs_network
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    mem_limit: 256m # Contoh pembatasan memori untuk DBGate
+
+# --- Networks ---
+networks:
+  dbs_network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+
+# --- Volumes ---
+volumes:
+  redis_data:
+    driver: local
+    name: ${DB_REDIS_VOLUME_DATA_NAME}
+  postgres_data: # Nama volume tetap sama, tapi akan digunakan oleh image postgres standar
+    driver: local
+    name: ${DB_PGSQL_VOLUME_DATA_NAME}
+  mongodb_data:
+    driver: local
+    name: ${DB_MONGO_VOLUME_DATA_NAME}
+  influxdb_data:
+    driver: local
+    name: ${DB_INFLUX_VOLUME_DATA_NAME}
+  elasticsearch_data:
+    driver: local
+    name: ${DB_ELASTIC_VOLUME_DATA_NAME}
+  dbgate_data:
+    driver: local
+    name: ${DB_DBGATE_VOLUME_DATA_NAME}
+  backend_odoo_data:
+    driver: local
+    name: ${BACKEND_ODOO_VOLUME_DATA_NAME}

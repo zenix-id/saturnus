@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Security category definition -->
+    <record id="category_zenix_zms" model="ir.module.category">
+        <field name="name">Zenix Zms</field>
+        <field name="description">Security category for Zenix Zms</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <!-- Group for regular users -->
+    <record id="group_zenix_zms_user" model="res.groups">
+        <field name="name">Zenix Zms User</field>
+        <field name="category_id" ref="category_zenix_zms"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Group for administrators -->
+    <record id="group_zenix_zms_manager" model="res.groups">
+        <field name="name">Zenix Zms Manager</field>
+        <field name="category_id" ref="category_zenix_zms"/>
+        <field name="implied_ids" eval="[(4, ref('group_zenix_zms_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

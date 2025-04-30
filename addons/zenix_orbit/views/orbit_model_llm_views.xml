@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View orbit.model.llm list -->
+    <record id="view_orbit_model_llm_list" model="ir.ui.view">
+        <field name="name">orbit.model.llm.list</field>
+        <field name="model">orbit.model.llm</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="display_name_label" string="Name"/>
+                <field name="provider"/>
+                <field name="base_url"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- View orbit.model.llm form -->
+    <record id="view_orbit_model_llm_form" model="ir.ui.view">
+        <field name="name">orbit.model.llm.form</field>
+        <field name="model">orbit.model.llm</field>
+        <field name="arch" type="xml">
+
+            <form string="LLM Model Configuration">
+                <header>
+                    <!-- Simplified string for testing -->
+                    <button name="test_connection" string="Test Connection and List Models" type="object" class="oe_highlight" data-hotkey="t"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., gpt-4o, shisa-ai/shisa-v2..."/>
+                        </h1>
+                        <field name="display_name_label" class="text-muted" nolabel="1"/>
+                    </div>
+                    <group>
+                        <group string="Provider Configuration">
+                            <field name="provider" widget="selection"/>
+                            <field name="base_url" placeholder="e.g., https://api.openai.com/v1"/>
+                            <field name="api_key" password="True" placeholder="Enter your API key"/>
+                        </group>
+                    </group>
+                     <notebook>
+                        <page string="Notes" name="notes">
+                             <!-- <field name="note" placeholder="Add internal notes about this configuration..." nolabel="1"/> -->
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- View orbit.model.llm Search -->
+    <record id="view_orbit_model_llm_search" model="ir.ui.view">
+        <field name="name">orbit.model.llm.search</field>
+        <field name="model">orbit.model.llm</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Model ID / Name"/>
+                <field name="provider"/>
+                <filter string="Provider" name="filter_by_provider" domain="[]" context="{'group_by': 'provider'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action orbit.model.llm -->
+    <record id="action_orbit_model_llm" model="ir.actions.act_window">
+        <field name="name">LLM Model Configurations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">orbit.model.llm</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_orbit_model_llm_search"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No LLM model configurations found.
+            </p><p>
+                Click 'Create' to set up a connection to an LLM provider like OpenAI, Open Router, or others.
+                You'll need the provider's Base URL and your API Key.
+                Use the 'Test Connection' button to verify your setup and see available models.
+            </p>
+        </field>
+    </record>
+
+    <!-- Example Menu Item -->
+    <!-- 
+    <menuitem
+        id="orbit_model_llm_menu"
+        name="LLM Configurations"
+        action="action_orbit_model_llm"
+        parent="your_module.orbit_menu_root"
+        sequence="10"/>
+    -->
+
+</odoo>

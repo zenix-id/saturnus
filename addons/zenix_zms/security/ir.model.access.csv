@@ -1,0 +1,6 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_zms_device_manager,zms_device_manager,zenix_zms.model_zms_device,,1,1,1,1
+access_zms_host_manager,zms_host_manager,zenix_zms.model_zms_host,,1,1,1,1
+access_zms_codex_manager,zms_codex_manager,zenix_zms.model_zms_codex,,1,1,1,1
+access_zms_secret_vault_manager,zms_secret_vault_manager,zenix_zms.model_zms_secret_vault,,1,1,1,1
+access_zms_secret_manager,zms_secret_manager,zenix_zms.model_zms_secret,,1,1,1,1

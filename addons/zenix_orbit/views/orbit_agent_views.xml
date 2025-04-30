@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- list View: Orbit Agent -->
+    <record id="view_orbit_agent_list" model="ir.ui.view">
+    <field name="name">view.orbit.agent.list</field>
+    <field name="model">orbit.agent</field>
+    <field name="arch" type="xml">
+        <list>
+            <field name="name"/>
+            <field name="role" optional="hide"/>
+            <field name="status"/>
+            <field name="total_tasks" string="Tasks"/>
+            <field name="project_count" string="Projects"/>
+            <field name="model_id"/>
+            <!-- <filed name="company_ids"/>
+            <field name="resource_ids"/> -->
+        </list>
+    </field>
+</record>
+
+
+    <!-- Form View: Orbit Agent -->
+    <record id="view_orbit_agent_form" model="ir.ui.view">
+        <field name="name">orbit.agent.form</field>
+        <field name="model">orbit.agent</field>
+        <field name="arch" type="xml">
+            <form string="Orbit Agent">
+                <sheet>
+                    <!-- Smart Buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(project.act_project_project_2_project_task_all)d"
+        type="action"
+        class="oe_stat_button"
+        icon="fa-tasks"
+        context="{'default_agent_id': id, 'search_default_agent_id': id}"
+        help="Tasks assigned to this agent">
+    <field name="total_tasks" widget="statinfo" string="Tasks"/>
+</button>
+
+                        <button name="%(project.open_view_project_all_config)d"
+        type="action"
+        class="oe_stat_button"
+        icon="fa-folder-open-o"
+        context="{'search_default_agent_ids': id}"
+        help="Projects this agent is involved in">
+    <field name="project_count" widget="statinfo" string="Projects"/>
+</button>
+<button name="action_create_user"
+        string="Create User"
+        type="object"
+        class="btn-primary"
+        invisible="user_id"/>
+                    </div>
+
+                    <!-- Title and Basic Info -->
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Agent Name..."/>
+                        </h1>
+                    </div>
+
+                    <!-- Status -->
+                    <group>
+                        <group>
+                            <field name="status"/>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="company_ids" options="{'no_create': True}"/>
+            <field name="resource_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <!-- Placeholder group for future fields -->
+                        </group>
+                    </group>
+
+                    <!-- role -->
+                    <group>
+                     <field name="user_id"/>
+                        <field name="role" placeholder="Enter a role for the agent..."/>
+                       
+                    </group>
+
+                    <!-- Tabs -->
+                    <notebook>
+                        <page string="Assigned Tasks" name="tasks">
+                            <field name="task_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="project_id"/>
+                                    <field name="stage_id"/>
+                                    <field name="user_ids" widget="many2many_tags" string="Assignees"/>
+                                    <field name="date_deadline"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Associated Projects" name="projects">
+                            <field name="project_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_post="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_orbit_agent_search" model="ir.ui.view">
+        <field name="name">orbit.agent.search</field>
+        <field name="model">orbit.agent</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="role"/>
+                <field name="model_id"/>
+                <filter string="Active" name="active" domain="[('status', '=', 'active')]"/>
+                <filter string="Inactive" name="inactive" domain="[('status', '=', 'inactive')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action: Orbit Agent -->
+    <record id="action_orbit_agent" model="ir.actions.act_window">
+        <field name="name">Orbit Agents</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">orbit.agent</field>
+        <field name="view_mode">list,form</field>
+        <field name="views" eval="[(False, 'list'), (False, 'form')]"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_orbit_agent_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_orbit_agent_form')})]"/>
+        <field name="search_view_id" ref="view_orbit_agent_search"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Orbit Agent
+            </p>
+            <p>
+                Manage agents involved in your Orbit processes and track their tasks and projects.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Root (assumes menu_orbit_root is declared or declared elsewhere) -->
+    <menuitem id="menu_orbit_root" name="Orbit" sequence="10"/>
+
+    <!-- Submenu: Orbit Agents -->
+    <menuitem id="menu_orbit_agent"
+              name="Agents"
+              parent="menu_orbit_root"
+              action="action_orbit_agent"
+              sequence="20"/>
+              <menuitem id="menu_orbit_model_llm"
+              name="Model LLM"
+              parent="menu_orbit_root"
+              action="action_orbit_model_llm"
+              sequence="21"/>
+              <menuitem id="menu_orbit_secret_vault"
+              name="Secret Vault"
+              parent="menu_orbit_root"
+              action="action_orbit_secret_vault"
+              sequence="22"/>
+</odoo>

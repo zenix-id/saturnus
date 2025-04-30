@@ -1,0 +1,5 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_orbit_agent_manager,orbit_agent_manager,model_orbit_agent,,1,1,1,1
+access_orbit_model_llm_manager,orbit_agent_manager,model_orbit_model_llm,,1,1,1,1
+access_orbit_secret_vault_manager,orbit_agent_manager,model_orbit_secret_vault,,1,1,1,1
+access_zenix_zms_device_manager,zenix_zms_device_manager,model_zenix_zms_device,,1,1,1,1
