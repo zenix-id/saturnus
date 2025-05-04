@@ -1,0 +1,40 @@
+# ! Docker Compose - ZENIX Local Multi-Database Setup + DBGate UI
+# ! (Single PostgreSQL instance, Added Elasticsearch)
+# ! DBGate connections to be added manually via UI.
+
+version: '3.8' # Gunakan versi yang mendukung format healthcheck
+
+services:
+  # --- Redis ---
+  backend:
+    image: odoo:18
+    container_name: ${BACKEND_ODOO_CONTAINER_NAME}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_ODOO_PORT}:8069"
+    volumes:
+      - backend_odoo_data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+      - ./enterprise-addons:/mnt/enterprise-addons
+    environment:
+      - HOST=postgres
+      - USER=${DB_USERNAME}
+      - PASSWORD=${DB_PASSWORD}
+    networks:
+      - dbs_network
+  
+
+# --- Networks ---
+networks:
+  dbs_network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+
+# --- Volumes ---
+volumes:
+  backend_odoo_data:
+    driver: local
+    name: ${BACKEND_ODOO_VOLUME_DATA_NAME}

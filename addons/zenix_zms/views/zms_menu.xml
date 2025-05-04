@@ -32,4 +32,16 @@
               action="action_zms_secret"
               sequence="24"/>
               
+              <menuitem id="menu_zenix_zms_metric"
+              name="Metric"
+              parent="menu_zenix_zms_root"
+              action="action_zms_metric"
+              sequence="25"/>
+
+              <menuitem id="menu_zenix_zms_tag"
+              name="Tag"
+              parent="menu_zenix_zms_root"
+              action="action_zms_tag"
+              sequence="26"/>
+              
  </odoo>

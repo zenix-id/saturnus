@@ -59,6 +59,7 @@ class ZmsHost(models.Model):
         , re.IGNORECASE) # Case insensitive
     codex_id = fields.Many2one('zms.codex', string='Codex Entry', readonly=True, index=True, ondelete='restrict', copy=False, help="Link to the unique Codex registry entry for this secret.")
     codex_code = fields.Char(related='codex_id.name', string='Codex', store=True, readonly=True, index=True, help="The unique 8-character code assigned to this secret.") # Changed help
+    
     __sql_constraints = [
         ('codex_code_uniq', 'UNIQUE(codex_code)', 'The assigned Codex code must be unique for each Secret Vault entry!'),
         ('secret_name_uniq', 'UNIQUE(name)', 'The Login Name must be unique!'),

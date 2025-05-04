@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <!-- Server Action zms_host -->
+    <record id="model_zms_device_action" model="ir.actions.server">
+        <field name="name">Action Check Device Latency</field>
+        <field name="model_id" ref="model_zms_device"/>
+        <field name="binding_model_id" ref="model_zms_device"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_check_device_latency()</field>
+    </record>
+
+
+</odoo>

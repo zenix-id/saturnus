@@ -12,7 +12,12 @@
                  <field name="codex_code"/>
                  <field name="host_id"/>
                  
-                    <field name="device_type"/>
+                 
+                    <field name="type"/>
+                    <field name="role"/>
+                    
+                    <field name="platform"/>
+                    <field name="latency_ms"/>
                     <field name="status"/>
                     
             </list>
@@ -26,24 +31,46 @@
         <field name="arch" type="xml">
             <form string="Zms Device">
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="Name..."/>
-                        </h1>
-                    </div>
-                    <group>
+                <div class="oe_title">
+                    <h1>
+                        <field name="name" placeholder="Device Name..." required="1" class="oe_inline"/>
+                    </h1>
+                </div>
+
+                <group>
+                   <field name="status"/>
+                </group>
+
+                <notebook>
+                    <page string="🛠 General Info">
                         <group>
-                              <!-- <field name="codex_id"/> -->
-                 <field name="codex_code"/>
-                        <field name="host_id"/>
-                    <field name="device_type"/>
-                    <field name="secret_id"/>
-                    
-                    <field name="status"/>
-                    </group>
+                            <group string="Identification">
+                                <field name="codex_code" readonly="1"/>
+                                <field name="host_id"/>
+                                <field name="secret_id"/>
+                            </group>
+
+                            <group string="Device Specs">
+                                <field name="type"/>
+                                <field name="role"/>
+                                <field name="platform"/>
+                                <field name="platform_version"/>
+                                <field name="location"/>
+                            </group>
+
+                            <group string="Monitoring">
+                                <field name="latency_ms" readonly="1" placeholder="e.g., 3 ms"/>
+                            </group>
                         </group>
-                </sheet>
+                    </page>
+
+                    <page string="📝 Notes">
+                        <group>
+                            <field name="notes" widget="text"/>
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
                 
             </form>
         </field>

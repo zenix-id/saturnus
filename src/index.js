@@ -8,6 +8,7 @@ import conbackend from './app/backend.js'; // Corrected import name if needed
 import fpcookie from '@fastify/cookie';
 import auth from './app/routes/auth.js'
 import oauth from './app/routes/oauth.js'
+import latency from './app/routes/tools/latency.js';
 import fastifySensible from '@fastify/sensible'; // <-- Import fastify-sensible
 const start = async () => {
   const fastify = buildServer(logger);
@@ -21,7 +22,7 @@ const start = async () => {
       cookie: {
         cookieName: 'refreshToken',
         sign: {
-          expiresIn: '10m', // Corrected: expiresIn should be inside sign options for cookie
+          expiresIn: '30d', // Corrected: expiresIn should be inside sign options for cookie
         },
       },
     });
@@ -30,19 +31,10 @@ const start = async () => {
     await fastify.register(conbackend); // Register your backend plugin
     await fastify.register(auth)
     await fastify.register(oauth)
-    // --- Define Routes ---
-    // This route definition is fine here, it doesn't depend on conbackend yet
+    await fastify.register(latency)
     await fastify.get('/token', async (request, reply) => {
-      // Sign with user details if needed, 'exatel' is just an example payload
-      const token = fastify.jwt.sign({ name: 'exatel' /* or user details */ }, { expiresIn: '1h' });
-      // Example of setting refresh token cookie (if needed)
-      // const refreshToken = fastify.jwt.sign({ id: 'someUserId' }, { expiresIn: '10m' }); // Example user identifier
-      // reply.setCookie('refreshToken', refreshToken, {
-      //   path: '/', // Or specific path
-      //   httpOnly: true, // Recommended for security
-      //   secure: process.env.NODE_ENV === 'production', // Send only over HTTPS in production
-      //   // sameSite: 'strict' // Recommended CSRF protection
-      // });
+      const token = fastify.jwt.sign({ name: 'exatel' /* or user details */ }, { expiresIn: '30d' });
+
       return { token };
     });
     // fastify.addHook('onRequest', (request) => request.jwtVerify({onlyCookie: true}))

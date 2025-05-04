@@ -4,10 +4,6 @@ import crypto from 'crypto';
 import axios from 'axios';
 async function beApiOauthRoutes(fastify, opts) {
 
-
-
-  // --- GET /api/be (List resources or models) ---
-
   fastify.post('/api/oauth', async (request, reply) => {
     const { login, name, image } = request.body || {};
   

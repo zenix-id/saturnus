@@ -15,6 +15,14 @@ class ZmsSecret(models.Model):
     username = fields.Char('Login Name', required=True, help="Enter the login name or identifier for this secret.")
     password = fields.Char('Password', required=True, copy=False,default='admin', help="The secret password. Restricted access.")
     api_key = fields.Char('API Key', help="Optional: API key for this secret.")
+    url_api = fields.Char('API URL', help="Optional: API URL for this secret.")
+    description = fields.Text('Description', help="Optional: Description of this secret.")
+    type = fields.Selection([
+        ('password', 'Password'),
+        ('api_key', 'API Key'),
+        ('url', 'URL'),
+        ('other', 'Other'),
+    ], string='Type', default='password',required=True, help="Select the type of secret.")
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='set null', help="Optional: Link this secret to a specific partner.",default=lambda self: self.env.user.partner_id.id)
     codex_id = fields.Many2one('zms.codex', string='Codex Entry', readonly=True, index=True, ondelete='restrict', copy=False, help="Link to the unique Codex registry entry for this secret.")
     codex_code = fields.Char(related='codex_id.name', string='Codex', store=True, readonly=True, index=True, help="The unique 8-character code assigned to this secret.") # Changed help

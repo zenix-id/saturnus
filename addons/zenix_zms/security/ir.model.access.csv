@@ -4,3 +4,5 @@ access_zms_host_manager,zms_host_manager,zenix_zms.model_zms_host,,1,1,1,1
 access_zms_codex_manager,zms_codex_manager,zenix_zms.model_zms_codex,,1,1,1,1
 access_zms_secret_vault_manager,zms_secret_vault_manager,zenix_zms.model_zms_secret_vault,,1,1,1,1
 access_zms_secret_manager,zms_secret_manager,zenix_zms.model_zms_secret,,1,1,1,1
+access_zms_metric_manager,zms_metric_manager,zenix_zms.model_zms_metric,,1,1,1,1
+access_zms_tag_manager,zms_tag_manager,zenix_zms.model_zms_tag,,1,1,1,1

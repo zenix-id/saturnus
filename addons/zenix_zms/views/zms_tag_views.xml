@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View zms.tag View List -->
+    <record id="view_zms_tag_list" model="ir.ui.view">
+        <field name="name">view.zms.tag.list</field>
+        <field name="model">zms.tag</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                            <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- View zms.tag form -->
+    <record id="view_zms_tag_form" model="ir.ui.view">
+        <field name="name">view.zms.tag.form</field>
+        <field name="model">zms.tag</field>
+        <field name="arch" type="xml">
+            <form string="Zms Tag">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                            <field name="color" widget="color_picker"/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View zms.tag search -->
+    <record id="view_zms_tag_search" model="ir.ui.view">
+        <field name="name">view.zms.tag.search</field>
+        <field name="model">zms.tag</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action zms.tag -->
+    <record id="action_zms_tag" model="ir.actions.act_window">
+        <field name="name">Zms Tag</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">zms.tag</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Zms Tag.
+            </p>
+        </field>
+    </record>
+
+</odoo>
